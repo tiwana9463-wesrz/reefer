@@ -1,0 +1,116 @@
+{
+  "entities": {
+    "truck": {
+      "title": "Truck",
+      "description": "Represents a truck and its driver metadata.",
+      "type": "object",
+      "properties": {
+        "truckNumber": { "type": "string" },
+        "driverName": { "type": "string" },
+        "driverPhone": { "type": "string" },
+        "whatsappGroupId": { "type": "string" },
+        "monitoringInterval": { "type": "integer" },
+        "reeferRequired": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "notes": { "type": "string" },
+        "currentStatus": { "type": "string" },
+        "lastUpdateTime": { "type": "string", "format": "date-time" },
+        "reeferTemp": { "type": "string" },
+        "lastLoadNumber": { "type": "string" }
+      },
+      "required": ["truckNumber", "driverName", "status"]
+    },
+    "message": {
+      "title": "Message",
+      "description": "Incoming WhatsApp or simulated message.",
+      "type": "object",
+      "properties": {
+        "sender": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "content": { "type": "string" },
+        "mediaUrl": { "type": "string" },
+        "mediaType": { "type": "string" },
+        "chatId": { "type": "string" },
+        "extractedData": { "type": "object" },
+        "processed": { "type": "boolean" }
+      },
+      "required": ["sender", "timestamp", "content"]
+    },
+    "rule": {
+      "title": "Automation Rule",
+      "description": "Rule for mapping text to sheet updates.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "trigger": { "type": "string" },
+        "action": { "type": "string" },
+        "field": { "type": "string" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["name", "trigger", "action", "active"]
+    },
+    "log": {
+      "title": "Log",
+      "description": "System and error logs.",
+      "type": "object",
+      "properties": {
+        "timestamp": { "type": "string", "format": "date-time" },
+        "level": { "type": "string", "enum": ["info", "error", "warn"] },
+        "message": { "type": "string" },
+        "context": { "type": "string" }
+      },
+      "required": ["timestamp", "level", "message"]
+    },
+    "setting": {
+      "title": "Setting",
+      "description": "Global application settings.",
+      "type": "object",
+      "properties": {
+        "sheetId": { "type": "string" },
+        "sheetMapping": { "type": "object" }
+      }
+    },
+    "nishanRecord": {
+      "title": "Nishan Record",
+      "description": "Historical load data for AI reference and memory.",
+      "type": "object",
+      "properties": {
+        "custPo": { "type": "string" },
+        "nishanPb": { "type": "string" },
+        "truck": { "type": "string" },
+        "trailer": { "type": "string" },
+        "commodity": { "type": "string" },
+        "division": { "type": "string" },
+        "requiredTemp": { "type": "string" },
+        "notes": { "type": "string" },
+        "lastSeen": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/trucks/{truckId}": {
+      "schema": "truck",
+      "description": "Truck registry"
+    },
+    "/messages/{messageId}": {
+      "schema": "message",
+      "description": "Log of received and processed messages"
+    },
+    "/rules/{ruleId}": {
+      "schema": "rule",
+      "description": "Automation rules"
+    },
+    "/logs/{logId}": {
+      "schema": "log",
+      "description": "System event logs"
+    },
+    "/settings/config": {
+      "schema": "setting",
+      "description": "Global config"
+    },
+    "/nishanRecords/{recordId}": {
+      "schema": "nishanRecord",
+      "description": "Historical load records for AI reference"
+    }
+  }
+}

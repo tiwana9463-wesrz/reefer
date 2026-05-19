@@ -1,0 +1,6 @@
+{
+  "name": "Nishan Transport AI",
+  "description": "Logistics automation for Nishan Transport. AI-powered extraction from WhatsApp and images to Google Sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
