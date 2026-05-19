@@ -38,7 +38,7 @@ export const api = {
     return res.json();
   },
 
-  async aiChat(message: string, context: any) {
+  async aiChat(message: any, context?: any) {
     const res = await fetch('/api/ai/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -49,6 +49,20 @@ export const api = {
   
   async getNishanRecords() {
     const res = await fetch('/api/nishan/records');
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to fetch records');
+    }
+    return res.json();
+  },
+
+  async syncMasterSheet(spreadsheetId: string) {
+    const accessToken = await getAccessToken();
+    const res = await fetch('/api/nishan/sync-sheet', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ spreadsheetId, accessToken }),
+    });
     return res.json();
   },
 

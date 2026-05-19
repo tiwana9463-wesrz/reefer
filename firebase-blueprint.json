@@ -67,7 +67,24 @@
       "type": "object",
       "properties": {
         "sheetId": { "type": "string" },
-        "sheetMapping": { "type": "object" }
+        "syncInterval": { "type": "string" },
+        "whatsappNumber": { "type": "string" },
+        "aiModel": { "type": "string" },
+        "lowTempThreshold": { "type": "string" },
+        "highTempThreshold": { "type": "string" },
+        "notifications": { "type": "boolean" },
+        "adminEmail": { "type": "string" }
+      }
+    },
+    "smtpConfig": {
+      "title": "SMTP Configuration",
+      "description": "Email server settings.",
+      "type": "object",
+      "properties": {
+        "host": { "type": "string" },
+        "port": { "type": "string" },
+        "user": { "type": "string" },
+        "pass": { "type": "string" }
       }
     },
     "nishanRecord": {
@@ -82,8 +99,25 @@
         "commodity": { "type": "string" },
         "division": { "type": "string" },
         "requiredTemp": { "type": "string" },
+        "setPoint": { "type": "string" },
+        "pulpTemp": { "type": "string" },
+        "status": { "type": "string" },
+        "mishaps": { "type": "string" },
+        "truckNotes": { "type": "string" },
         "notes": { "type": "string" },
-        "lastSeen": { "type": "string", "format": "date-time" }
+        "lastSeen": { "type": "string", "format": "date-time" },
+        "summary": { "type": "string" }
+      }
+    },
+    "asset": {
+      "title": "Asset",
+      "description": "Media assets and documents.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string" },
+        "type": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
       }
     }
   },
@@ -104,13 +138,21 @@
       "schema": "log",
       "description": "System event logs"
     },
-    "/settings/config": {
+    "/config/main": {
       "schema": "setting",
       "description": "Global config"
+    },
+    "/config/smtp": {
+      "schema": "smtpConfig",
+      "description": "SMTP settings"
     },
     "/nishanRecords/{recordId}": {
       "schema": "nishanRecord",
       "description": "Historical load records for AI reference"
+    },
+    "/assets/{assetId}": {
+      "schema": "asset",
+      "description": "Media assets"
     }
   }
 }

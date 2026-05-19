@@ -1,8 +1,57 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Default deny
     match /{document=**} {
-      allow read, write: if true; // In production, replace with proper auth checks
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isVerified() && (
+        request.auth.token.email == 'tiwana9463@gmail.com'
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Config collection
+    match /config/{configId} {
+      allow read, write: if true;
+    }
+
+    // Nishan Records
+    match /nishanRecords/{recordId} {
+      allow read, write: if true;
+    }
+
+    // Assets
+    match /assets/{assetId} {
+      allow read, write: if true;
+    }
+
+    // Logs, rules, trucks, messages (from blueprint)
+    match /logs/{logId} {
+      allow read, write: if true;
+    }
+    match /rules/{ruleId} {
+      allow read, write: if true;
+    }
+    match /trucks/{truckId} {
+      allow read, write: if true;
+    }
+    match /messages/{messageId} {
+      allow read, write: if true;
     }
   }
 }

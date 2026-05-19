@@ -215,6 +215,36 @@ export default function Settings() {
                       </div>
                       <button className="text-[10px] font-bold text-blue-400 hover:underline px-4 py-2 bg-white/5 rounded-lg">RE-VERIFY</button>
                     </div>
+
+                    <div className="p-6 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-4">
+                       <div className="flex items-center gap-2">
+                          <Globe className="w-4 h-4 text-blue-600" />
+                          <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-800">Dynamic WhatsApp Webhook</h4>
+                       </div>
+                       <div className="space-y-3">
+                          <div>
+                             <p className="text-[9px] font-bold text-blue-400 uppercase mb-1">Target URL (Point Meta/Twilio here)</p>
+                             <div className="p-3 bg-white border border-blue-100 rounded-lg text-[11px] font-mono text-slate-600 break-all">
+                                {window.location.origin}/webhook/whatsapp
+                             </div>
+                          </div>
+                          <div className="flex gap-4">
+                             <div className="flex-1">
+                                <p className="text-[9px] font-bold text-blue-400 uppercase mb-1">Verify Token</p>
+                                <div className="p-2 bg-white border border-blue-100 rounded-lg text-[10px] font-mono text-slate-600">
+                                   shipping_ai_token
+                                </div>
+                             </div>
+                             <div className="flex-1">
+                                <p className="text-[9px] font-bold text-blue-400 uppercase mb-1">Status</p>
+                                <div className="flex items-center gap-1.5 p-2 bg-white border border-blue-100 rounded-lg text-[10px] font-bold text-green-600">
+                                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                                   LIVE POLLING
+                                </div>
+                             </div>
+                          </div>
+                       </div>
+                    </div>
                 </div>
               </div>
             </>

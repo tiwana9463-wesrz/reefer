@@ -20,19 +20,22 @@ export default function AIChat() {
     
     const userMsg = input;
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
+    const newMessages = [...messages, { role: 'user' as const, content: userMsg }];
+    setMessages(newMessages);
     setIsLoading(true);
 
     try {
+      const history = newMessages.map(m => ({
+        role: m.role === 'assistant' ? 'model' as const : 'user' as const,
+        parts: [{ text: m.content }]
+      }));
+
       const context = {
-        trucks: [
-          { number: '204', driver: 'Michael Scott', status: 'In Transit', location: 'Gary, IN', reefer: '34F' },
-          { number: '115', driver: 'Jim Halpert', status: 'Unloading', location: 'Detroit, MI' }
-        ],
-        alerts: ['Truck 402 inactive for 4 hours']
+        appState: 'Nishan Dispatch Active',
+        dashboardUrl: window.location.origin
       };
 
-      const response = await api.aiChat(userMsg, context);
+      const response = await api.aiChat(history, context);
       setMessages(prev => [...prev, { role: 'assistant', content: response.text || 'Process interrupted. Please retry.' }]);
     } catch (error) {
       console.error(error);

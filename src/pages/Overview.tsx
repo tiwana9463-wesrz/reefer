@@ -32,12 +32,17 @@ export default function Overview() {
     fetchStats();
   }, []);
 
-  const alertRecords = records.filter(r => {
-    if (!r.requiredTemp || !r.setPoint) return false;
+  const alertRecords = Array.isArray(records) ? records.filter(r => {
+    if (!r || !r.requiredTemp) return false;
     const target = parseFloat(r.requiredTemp);
-    const actual = parseFloat(r.setPoint);
-    return !isNaN(target) && !isNaN(actual) && Math.abs(target - actual) > 1;
-  });
+    const setPoint = parseFloat(r.setPoint);
+    const pulp = parseFloat(r.pulpTemp);
+    
+    const setPointMismatch = !isNaN(target) && !isNaN(setPoint) && Math.abs(target - setPoint) > 2;
+    const pulpMismatch = !isNaN(target) && !isNaN(pulp) && Math.abs(target - pulp) > 2;
+    
+    return setPointMismatch || pulpMismatch;
+  }) : [];
 
   return (
     <div className="space-y-8 pb-10">
@@ -49,12 +54,12 @@ export default function Overview() {
                  <AlertCircle className="w-6 h-6" />
               </div>
               <div>
-                 <h3 className="text-sm font-black uppercase tracking-widest">Temperature Mismatch Detected</h3>
-                 <p className="text-xs font-medium text-red-100">{alertRecords.length} loads currently show discrepancies between BOL requirement and Reefer set point.</p>
+                 <h3 className="text-sm font-black uppercase tracking-widest">Critical Temperature Mismatch</h3>
+                 <p className="text-xs font-medium text-red-100">{alertRecords.length} loads currently show Pulp or Set Point deviations &gt; 2°F.</p>
               </div>
            </div>
            <button className="px-6 py-2 bg-white text-red-600 rounded-xl text-xs font-black uppercase shadow-lg hover:bg-red-50 transition-all">
-              View Alerts
+              Review Alerts
            </button>
         </div>
       )}
@@ -62,7 +67,7 @@ export default function Overview() {
       {/* Primary Stats Header */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: 'Active Fleet', value: records.length.toString(), trend: 'Real-time Data', icon: TrendingUp, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Active Fleet', value: (Array.isArray(records) ? records.length : 0).toString(), trend: 'Real-time Data', icon: TrendingUp, color: 'text-blue-600', bg: 'bg-blue-50' },
           { label: 'Recent Alerts', value: alertRecords.length.toString(), trend: 'Immediate Action', icon: AlertCircle, color: alertRecords.length > 0 ? 'text-red-600' : 'text-green-600', bg: alertRecords.length > 0 ? 'bg-red-50' : 'bg-green-50' },
           { label: 'AI Accuracy', value: '99.2%', trend: 'Manual Checks: Low', icon: Brain, color: 'text-indigo-600', bg: 'bg-indigo-50' },
           { label: 'Sync Status', value: 'Live', trend: 'Nishan Database OK', icon: Zap, color: 'text-slate-800', bg: 'bg-slate-50' },
@@ -115,7 +120,7 @@ export default function Overview() {
                     </tr>
                   </thead>
                   <tbody className="text-sm text-slate-600 divide-y divide-slate-50">
-                    {records.length === 0 ? (
+                    {!Array.isArray(records) || records.length === 0 ? (
                       <tr>
                         <td colSpan={4} className="px-6 py-12 text-center text-slate-400 italic">No recent log entries detected.</td>
                       </tr>
@@ -123,10 +128,14 @@ export default function Overview() {
                       records.map((row, i) => {
                         const target = parseFloat(row.requiredTemp);
                         const actual = parseFloat(row.setPoint);
-                        const hasMismatch = !isNaN(target) && !isNaN(actual) && Math.abs(target - actual) > 1;
+                        const pulp = parseFloat(row.pulpTemp);
+                        
+                        const hasSetMismatch = !isNaN(target) && !isNaN(actual) && Math.abs(target - actual) > 2;
+                        const hasPulpMismatch = !isNaN(target) && !isNaN(pulp) && Math.abs(target - pulp) > 2;
+                        const isAlert = hasSetMismatch || hasPulpMismatch;
 
                         return (
-                          <tr key={i} className={`${hasMismatch ? 'bg-red-50/20' : 'hover:bg-slate-50/30'} transition-colors group cursor-pointer`}>
+                          <tr key={i} className={`${isAlert ? 'bg-red-50/20' : 'hover:bg-slate-50/30'} transition-colors group cursor-pointer`}>
                             <td className="px-6 py-4">
                               <div className="font-bold text-slate-900">#{row.custPo || row.nishanPb || '---'}</div>
                               <div className="text-[10px] text-blue-600 font-bold uppercase tracking-tight">
@@ -138,14 +147,23 @@ export default function Overview() {
                                 <span className="text-xs font-bold text-slate-700">{row.commodity || 'General Freight'}</span>
                                 <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-bold uppercase">{row.division || 'INBOND'}</span>
                               </div>
-                              <div className="text-[10px] text-slate-400 truncate w-48">{row.summary}</div>
+                              <div className="text-[10px] text-slate-400 truncate w-48 mb-1">{row.summary}</div>
+                              {(row.mishaps || row.truckNotes) && (
+                                <div className="flex gap-2">
+                                  {row.mishaps && <span className="text-[9px] text-red-600 font-bold bg-red-50 px-1 rounded truncate max-w-[100px]">M: {row.mishaps}</span>}
+                                  {row.truckNotes && <span className="text-[9px] text-indigo-600 font-bold bg-indigo-50 px-1 rounded truncate max-w-[100px]">N: {row.truckNotes}</span>}
+                                </div>
+                              )}
                             </td>
                             <td className="px-6 py-4">
                               <div className="flex flex-col gap-1">
-                                <div className="flex gap-3 text-[10px] font-bold">
+                                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] font-bold">
                                   <span className="text-slate-400">REQ: {row.requiredTemp || '--'}°F</span>
-                                  <span className={hasMismatch ? 'text-red-500 underline decoration-2' : 'text-green-600'}>
+                                  <span className={hasSetMismatch ? 'text-red-500 underline decoration-2' : 'text-green-600'}>
                                     SET: {row.setPoint || '--'}°F
+                                  </span>
+                                  <span className={hasPulpMismatch ? 'text-orange-600 font-black' : 'text-slate-600'}>
+                                    PULP: {row.pulpTemp || '--'}°F
                                   </span>
                                 </div>
                                 <div className="text-[9px] font-medium text-slate-400 truncate w-32">{row.notes}</div>

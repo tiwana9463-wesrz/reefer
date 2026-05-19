@@ -85,39 +85,9 @@ export default function App() {
     );
   }
 
-  // Combined Auth Gate: Requires BOTH Nishan Login AND Google Connection (for Sheets)
+  // Combined Auth Gate: Requires Nishan Login (Google is now optional)
   if (!session) {
     return <Login onLogin={handleCustomLogin} />;
-  }
-
-  if (!user) {
-    return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-slate-50 p-4 text-slate-900 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-blue-50 via-slate-50 to-white">
-        <div className="mb-12 flex flex-col items-center text-center">
-          <div className="mb-6 flex h-16 w-16 items-center justify-center bg-blue-600 rounded-2xl text-white shadow-xl shadow-blue-100">
-            <Database className="h-8 w-8" />
-          </div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Step 2: Connect Google</h1>
-          <p className="mt-2 text-sm text-slate-500 font-bold uppercase tracking-widest text-[10px]">Required for Google Sheets Integration</p>
-          <p className="mt-1 text-xs text-slate-400 max-w-xs">Connecting to Google allows Nishan AI to read and write to your master logistics spreadsheets.</p>
-        </div>
-        
-        <button 
-          onClick={handleLogin}
-          className="flex items-center gap-3 bg-white border-2 border-slate-100 px-10 py-5 text-sm font-black text-slate-700 rounded-3xl hover:border-blue-600/20 hover:bg-slate-50 transition-all shadow-xl shadow-slate-100 uppercase tracking-widest"
-        >
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="" />
-          Connect Google Account
-        </button>
-
-        <button 
-          onClick={handleLogout}
-          className="mt-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-red-500 transition-colors"
-        >
-          Back to Login
-        </button>
-      </div>
-    );
   }
 
   const navItems = [
@@ -205,11 +175,11 @@ export default function App() {
 
           <div className="flex items-center gap-6">
             <div className="hidden md:flex flex-col items-end">
-               <span className="text-xs font-bold text-slate-800">{user.displayName || 'Operations Lead'}</span>
+               <span className="text-xs font-bold text-slate-800">{user?.displayName || 'Operations Lead'}</span>
                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter italic">Admin Secured</span>
             </div>
             <div className="h-10 w-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 overflow-hidden">
-              {user.photoURL ? <img src={user.photoURL} alt="profile" className="w-full h-full object-cover" /> : <SettingsIcon className="w-5 h-5" />}
+              {user?.photoURL ? <img src={user.photoURL} alt="profile" className="w-full h-full object-cover" /> : <SettingsIcon className="w-5 h-5" />}
             </div>
           </div>
         </header>

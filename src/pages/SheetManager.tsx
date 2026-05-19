@@ -3,14 +3,30 @@ import { ExternalLink, RefreshCw, FileSpreadsheet, MapPin } from 'lucide-react';
 import { api } from '../services/api';
 
 export default function SheetManager() {
-  const [sheetId, setSheetId] = useState('1PSZeYT99phUp_v7BRT_4nam9DQaR9lzxVryK-hLG_WY');
+  const [sheetId, setSheetId] = useState('');
   const [data, setData] = useState<any[][]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPushing, setIsPushing] = useState(false);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const settings = await api.getSettings();
+        if (settings.sheetId) {
+          setSheetId(settings.sheetId);
+        }
+      } catch (error) {
+        console.error("Failed to fetch settings:", error);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const fetchSheetData = async () => {
+    if (!sheetId) return;
     setIsLoading(true);
     try {
-      const response = await api.sheetsRead(sheetId, 'Sheet1!A1:Z50');
+      const response = await api.sheetsRead(sheetId, 'Sheet1!A1:Z100');
       if (response.values) {
         setData(response.values);
       }
@@ -21,9 +37,26 @@ export default function SheetManager() {
     }
   };
 
+  const pushDatabaseToSheet = async () => {
+    if (!sheetId) return;
+    setIsPushing(true);
+    try {
+      await api.syncMasterSheet(sheetId);
+      await fetchSheetData();
+      alert('Master Sheet Updated Successfully!');
+    } catch (error) {
+      console.error(error);
+      alert('Failed to update Master Sheet. Check Google permissions.');
+    } finally {
+      setIsPushing(false);
+    }
+  };
+
   useEffect(() => {
-    fetchSheetData();
-  }, []);
+    if (sheetId) {
+      fetchSheetData();
+    }
+  }, [sheetId]);
 
   return (
     <div className="flex flex-col h-full space-y-6">
@@ -34,16 +67,25 @@ export default function SheetManager() {
           </div>
           <div>
             <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Nishan Master Sheet</h2>
-            <p className="text-sm font-bold text-slate-800 tracking-tight truncate w-64 uppercase">{sheetId}</p>
+            <p className="text-sm font-bold text-slate-800 tracking-tight truncate w-64 uppercase">{sheetId || 'NOT CONFIGURED'}</p>
           </div>
         </div>
         <div className="flex gap-3">
           <button 
+            onClick={pushDatabaseToSheet}
+            disabled={isPushing || !sheetId}
+            className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all shadow-md active:scale-95 disabled:opacity-50"
+          >
+            {isPushing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+            Map Database to Sheet
+          </button>
+          
+          <button 
             onClick={fetchSheetData}
-            disabled={isLoading}
+            disabled={isLoading || !sheetId}
             className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading && 'animate-spin'}`} /> Sync Data
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading && 'animate-spin'}`} /> Reload
           </button>
           <a 
             href={`https://docs.google.com/spreadsheets/d/${sheetId}`} 
