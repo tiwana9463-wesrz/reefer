@@ -70,9 +70,9 @@ export default function LiveMessages() {
         <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">WhatsApp Operations Stream</h2>
         </div>
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/30">
-          {messages.map(msg => (
-            <div key={msg.id} className="bg-white border border-slate-200 p-4 rounded-lg shadow-sm hover:shadow-md transition-all">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4 bg-slate-50/30">
+          {messages.map((msg, i) => (
+            <div key={`${msg.id}-${i}`} className="bg-white border border-slate-200 p-4 rounded-lg shadow-sm hover:shadow-md transition-all">
               <div className="flex justify-between items-start mb-2">
                 <span className="font-bold text-xs text-slate-900">{msg.sender}</span>
                 <span className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">{msg.timestamp}</span>

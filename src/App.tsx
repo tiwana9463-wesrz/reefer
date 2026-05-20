@@ -5,17 +5,14 @@ import {
   MessageSquare, 
   Table as TableIcon, 
   Bot, 
-  Settings as SettingsIcon, 
-  FileText, 
+  Settings as SettingsIcon,
+  FileText,
   Zap,
   LogOut,
   Menu,
   X,
-  AlertCircle,
   Database
 } from 'lucide-react';
-import { auth, googleProvider } from './lib/firebase';
-import { signInWithPopup, onAuthStateChanged, User, signOut, GoogleAuthProvider } from 'firebase/auth';
 import Overview from './pages/Overview';
 import TruckGroups from './pages/TruckGroups';
 import WhatsAppHub from './pages/WhatsAppHub';
@@ -31,7 +28,6 @@ import { motion, AnimatePresence } from 'motion/react';
 type Page = 'overview' | 'trucks' | 'whatsapp' | 'nishan' | 'sheets' | 'ai' | 'rules' | 'settings' | 'logs';
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<{ token: string, user: any } | null>(null);
   const [loading, setLoading] = useState(true);
   const [activePage, setActivePage] = useState<Page>('overview');
@@ -43,11 +39,7 @@ export default function App() {
     if (saved) {
       setSession(JSON.parse(saved));
     }
-    
-    return onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setLoading(false);
-    });
+    setLoading(false);
   }, []);
 
   const handleCustomLogin = (token: string, userData: any) => {
@@ -56,21 +48,9 @@ export default function App() {
     localStorage.setItem('nishan_session', JSON.stringify(sess));
   };
 
-  const handleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const credential: any = GoogleAuthProvider.credentialFromResult(result);
-      (window as any)._googleAccessToken = credential.accessToken;
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
-  };
-
   const handleLogout = () => {
-    signOut(auth);
     setSession(null);
     localStorage.removeItem('nishan_session');
-    (window as any)._googleAccessToken = null;
   };
 
   if (loading) {
@@ -175,11 +155,11 @@ export default function App() {
 
           <div className="flex items-center gap-6">
             <div className="hidden md:flex flex-col items-end">
-               <span className="text-xs font-bold text-slate-800">{user?.displayName || 'Operations Lead'}</span>
+               <span className="text-xs font-bold text-slate-800">{session?.user?.name || 'Operations Lead'}</span>
                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter italic">Admin Secured</span>
             </div>
             <div className="h-10 w-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 overflow-hidden">
-              {user?.photoURL ? <img src={user.photoURL} alt="profile" className="w-full h-full object-cover" /> : <SettingsIcon className="w-5 h-5" />}
+              <SettingsIcon className="w-5 h-5" />
             </div>
           </div>
         </header>

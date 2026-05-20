@@ -29,13 +29,31 @@ export const api = {
     return res.json();
   },
 
+  async sheetsAppend(spreadsheetId: string, range: string, values: any[][]) {
+    const accessToken = await getAccessToken();
+    const res = await fetch('/api/sheets/append', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ spreadsheetId, range, values, accessToken }),
+    });
+    return res.json();
+  },
+
   async processAIMessage(content: string, mediaBase64?: string, mimeType?: string) {
     const res = await fetch('/api/ai/process-message', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content, mediaBase64, mimeType }),
     });
-    return res.json();
+    const text = await res.text();
+    if (!res.ok || text.startsWith("Rate exceeded")) {
+      throw new Error(text);
+    }
+    try {
+      return JSON.parse(text);
+    } catch(err: any) {
+      throw new Error("Invalid format: " + text);
+    }
   },
 
   async aiChat(message: any, context?: any) {
@@ -44,7 +62,9 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message, context }),
     });
-    return res.json();
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Chat failed');
+    return data;
   },
   
   async getNishanRecords() {

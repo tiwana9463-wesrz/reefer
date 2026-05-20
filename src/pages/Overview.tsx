@@ -199,7 +199,7 @@ export default function Overview() {
              <div className="space-y-4">
                 {[
                   { label: 'Google Sheets Connection', status: 'Healthy', ok: true },
-                  { label: 'Gemini 3-Flash Gateway', status: 'Ready', ok: true },
+                  { label: 'Gemini 1.5 Flash Gateway', status: 'Ready', ok: true },
                   { label: 'WhatsApp Webhook (Meta)', status: 'Configured', ok: true },
                   { label: 'Nishan Memory DB', status: 'Active', ok: true },
                 ].map((item, i) => (

@@ -95,8 +95,8 @@ export default function NishanMemory() {
                   </tr>
                 ))
               ) : filteredRecords.length > 0 ? (
-                filteredRecords.map((record) => (
-                  <tr key={record.id} className="hover:bg-slate-50 transition-colors">
+                filteredRecords.map((record, i) => (
+                  <tr key={`${record.id}-${i}`} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="font-bold text-slate-900">{record.custPo || 'N/A'}</div>
                       <div className="text-[10px] text-blue-600 font-bold uppercase">{record.nishanPb}</div>

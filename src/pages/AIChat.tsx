@@ -37,9 +37,9 @@ export default function AIChat() {
 
       const response = await api.aiChat(history, context);
       setMessages(prev => [...prev, { role: 'assistant', content: response.text || 'Process interrupted. Please retry.' }]);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Connection timed out. System kernel status: OFFLINE.' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${error.message || 'Connection timed out. System kernel status: OFFLINE.'}` }]);
     } finally {
       setIsLoading(false);
     }

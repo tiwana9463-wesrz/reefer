@@ -127,8 +127,8 @@ export default function TruckGroups() {
                   </td>
                 </tr>
               ) : (
-                trucks.map(truck => (
-                  <tr key={truck.id} className="hover:bg-slate-50/50 transition-colors cursor-pointer group">
+                trucks.map((truck, i) => (
+                  <tr key={`${truck.id}-${i}`} className="hover:bg-slate-50/50 transition-colors cursor-pointer group">
                     <td className="px-6 py-4">
                       <button 
                         onClick={() => toggleMonitoring(truck)}

@@ -29,6 +29,7 @@ export default function Settings() {
     whatsappNumber: '',
     syncInterval: '5',
     aiModel: '',
+    customApiKey: '',
     lowTempThreshold: '',
     highTempThreshold: '',
     notifications: true,
@@ -186,7 +187,7 @@ export default function Settings() {
                       <label className="text-xs font-bold text-slate-700 uppercase">Model Selection</label>
                       <div className="grid grid-cols-2 gap-4">
                           {[
-                            { id: 'Gemini 3-Flash (Preview)', desc: 'Fastest response, optimized for logistics extraction.' },
+                            { id: 'Gemini 1.5 Flash', desc: 'Fastest response, free-tier optimized for logistics extraction.' },
                             { id: 'Gemini 1.5 Pro', desc: 'Deepest analysis, best for complex BOL verification.' }
                           ].map((model) => (
                             <div 
@@ -201,6 +202,18 @@ export default function Settings() {
                             </div>
                           ))}
                       </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2 pt-4 border-t border-slate-100">
+                      <label className="text-xs font-bold text-slate-700 uppercase">Custom Gemini API Key</label>
+                      <input 
+                        type="password" 
+                        value={config.customApiKey}
+                        onChange={(e) => setConfig({...config, customApiKey: e.target.value})}
+                        placeholder="Leave blank to use default workspace key; or enter AIzaSy..."
+                        className="p-3 text-sm bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 ring-blue-500/20 transition-all font-mono text-slate-600"
+                      />
+                      <p className="text-[10px] text-slate-400">If you hit rate limits with the default workspace key, provide your own free Gemini API key here.</p>
                     </div>
 
                     <div className="p-4 bg-slate-900 rounded-xl flex items-center justify-between text-white">
